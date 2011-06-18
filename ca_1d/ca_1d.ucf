@@ -1,0 +1,20 @@
+NET "CLK"       LOC = "T9"  ;
+NET "rst" 	LOC = "M13";
+
+NET "LED<7>"    LOC = "P11"  ;
+NET "LED<6>"    LOC = "P12"  ;
+NET "LED<5>"    LOC = "N12"  ;
+NET "LED<4>"    LOC = "P13"  ;
+NET "LED<3>"    LOC = "N14"  ;
+NET "LED<2>"    LOC = "L12"  ;
+NET "LED<1>"    LOC = "P14"  ;
+NET "LED<0>"    LOC = "K12"  ;
+
+NET "switch<0>" LOC = "F12"  ;
+NET "switch<1>" LOC = "G12"  ;
+NET "switch<2>" LOC = "H14"  ;
+NET "switch<3>" LOC = "H13"  ;
+NET "switch<4>" LOC = "J14"  ;
+NET "switch<5>" LOC = "J13"  ;
+NET "switch<6>" LOC = "K14"  ;
+NET "switch<7>" LOC = "K13"  ;
