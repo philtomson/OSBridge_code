@@ -3,21 +3,51 @@ use IEEE.STD_LOGIC_1164.ALL;
 use IEEE.numeric_std.all;
 use IEEE.std_logic_unsigned.all;
 
+
+
 entity ca_1d is
   port( clk    : in  std_logic;
         rst    : in  std_logic;
         switch : in  std_logic_vector(7 downto 0);
-        digits : out std_logic_vector(3 downto 0);
-        
+        digits : inout std_logic_vector(3 downto 0);
+        segs   : inout std_logic_vector(6 downto 0);
         led    : out std_logic_vector(7 downto 0) );
 end ca_1d;
 
 architecture beh of ca_1d is
+
+subtype SEVEN_SEGMENT is STD_LOGIC_VECTOR (6 downto 0);
+type NUM_TABLE is array (0 to 15) of SEVEN_SEGMENT;
+
+constant OFF   : SEVEN_SEGMENT := "1111111";
+constant ZERO  : SEVEN_SEGMENT := "0000001";
+constant ONE   : SEVEN_SEGMENT := "1001111";
+constant TWO   : SEVEN_SEGMENT := "0010010";
+constant THREE : SEVEN_SEGMENT := "0000110";
+
+constant FOUR  : SEVEN_SEGMENT := "1001100";
+constant FIVE  : SEVEN_SEGMENT := "0100100";
+constant SIX   : SEVEN_SEGMENT := "0100000";
+constant SEVEN : SEVEN_SEGMENT := "0001111";
+constant EIGHT : SEVEN_SEGMENT := "0000000";
+constant NINE  : SEVEN_SEGMENT := "0000100";
+constant A     : SEVEN_SEGMENT := "0001000";
+constant B     : SEVEN_SEGMENT := "1100000";
+constant C     : SEVEN_SEGMENT := "0110001";
+constant D     : SEVEN_SEGMENT := "1000010";
+constant E     : SEVEN_SEGMENT := "0110000";
+constant F     : SEVEN_SEGMENT := "0111000";
+
+constant LED_TABLE : NUM_TABLE := ( ZERO, ONE, TWO, THREE, FOUR, FIVE,
+                                    SIX, SEVEN, EIGHT, NINE, A, B, C,
+				    D, E, F);
+
+
   signal termcount : std_logic := '0';
   signal ctr       : std_logic_vector(23 downto 0) := (others => '0');
   signal curr_gen  : std_logic_vector(7 downto 0)  := "00010000";
   signal next_gen  : std_logic_vector(7 downto 0)  := "00010000";
-  signal genctr    : std_logic_vector(15 downto 0) := (others => '0');
+  signal genctr    : unsigned(15 downto 0)         := (others => '0');
   signal rule      : std_logic_vector(7 downto 0)  := "00011110"; --rule 30
   signal rstin     : std_logic;
 
@@ -29,6 +59,7 @@ architecture beh of ca_1d is
            vals  : in  std_logic_vector(7 downto 0);
 	   output: out std_logic);
   end component;
+
 
 begin
 --  GEN_RULES: for i in 0 to 3 generate
@@ -143,11 +174,37 @@ begin
   begin
     if rst = '1' then
       genctr <= (others => '0');
+      digits <= "1110";
+      segs    <= OFF;
     elsif clk'event and clk = '1' then
       if(termcount = '1') then
         genctr <= genctr + x"0001";
+
+	    --digits <= "1110";  -- digit 0 
+	    --segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
       else
 	genctr <= genctr;
+	    digits <= "1110";  -- digit 0 
+	    segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
+--        case digits is
+--	  when "1110" =>
+--	    digits <= "1101";  -- digit 1
+--	    --led    <= LED_TABLE(conv_integer(genctr(7 downto 4)));
+--	    segs    <= LED_TABLE(to_integer(genctr(7 downto 4)));
+--	  when "1101" => 
+--	    digits <= "1011";  -- digit 2
+--	    segs    <= LED_TABLE(to_integer(genctr(11 downto 8)));
+--	  when "1011" => 
+--	    digits <= "0111";  -- digit 3 
+--	    segs    <= LED_TABLE(to_integer(genctr(15 downto 9)));
+--	  when "0111" => 
+--	    digits <= "1110";  -- digit 0 
+--	    segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
+--	  when others =>
+--	    digits <= "1110"; 
+--	    segs    <= OFF;
+--	end case;
+
       end if;
     end if;
   end process;
