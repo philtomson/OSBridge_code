@@ -44,7 +44,7 @@ constant LED_TABLE : NUM_TABLE := ( ZERO, ONE, TWO, THREE, FOUR, FIVE,
 
 
   signal termcount : std_logic := '0';
-  signal ctr       : std_logic_vector(23 downto 0) := (others => '0');
+  signal ctr       : unsigned(23 downto 0) := (others => '0');
   signal curr_gen  : std_logic_vector(7 downto 0)  := "00010000";
   signal next_gen  : std_logic_vector(7 downto 0)  := "00010000";
   signal genctr    : unsigned(15 downto 0)         := (others => '0');
@@ -144,29 +144,48 @@ begin
            input0 => curr_gen(6),
 	   input1 => curr_gen(7),
 	   input2 => curr_gen(0), 
-           --input  => (curr_gen(0)&curr_gen(7)&curr_gen(6)),
            vals   => rule,
 	   output => next_gen(7));
 
   rstin <= rst;
   rule <= switch;
+
   process (clk, rstin, switch)
   begin
     if rstin = '1' then
-      CTR <= (others => '0');--"0000000000000";
-      --rule     <= switch;
+      ctr <= (others => '0');
       curr_gen <= switch;
       termcount <= '0';
+      digits <= "1110";
+      segs    <= OFF;
     elsif clk'event and clk = '1' then
-      --rule <= rule;
-      if (CTR = x"800000") then   -- counter reaches 2^13
+      if (ctr = x"800000") then   -- counter reaches 2^13
 	termcount <= '1';
 	curr_gen <= next_gen;
       else
 	termcount <= '0';
 	curr_gen <= curr_gen;
       end if;
-      CTR <= CTR + x"000001";
+      if (ctr(15 downto 0) = x"8000") then
+        case digits is
+	  when "1110" =>
+	    digits <= "1101";  -- digit 1
+	    segs    <= LED_TABLE(to_integer(genctr(7 downto 4)));
+	  when "1101" => 
+	    digits <= "1011";  -- digit 2
+	    segs    <= LED_TABLE(to_integer(genctr(11 downto 8)));
+	  when "1011" => 
+	    digits <= "0111";  -- digit 3 
+	    segs    <= LED_TABLE(to_integer(genctr(15 downto 12)));
+	  when "0111" => 
+	    digits <= "1110";  -- digit 0 
+	    segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
+	  when others =>
+	    digits <= "1110"; 
+	    segs    <= OFF;
+	end case;
+      end if;
+      ctr <= ctr + x"000001";
     end if; 
   End Process;
 
@@ -174,37 +193,11 @@ begin
   begin
     if rst = '1' then
       genctr <= (others => '0');
-      digits <= "1110";
-      segs    <= OFF;
     elsif clk'event and clk = '1' then
       if(termcount = '1') then
         genctr <= genctr + x"0001";
-
-	    --digits <= "1110";  -- digit 0 
-	    --segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
       else
 	genctr <= genctr;
-	    digits <= "1110";  -- digit 0 
-	    segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
---        case digits is
---	  when "1110" =>
---	    digits <= "1101";  -- digit 1
---	    --led    <= LED_TABLE(conv_integer(genctr(7 downto 4)));
---	    segs    <= LED_TABLE(to_integer(genctr(7 downto 4)));
---	  when "1101" => 
---	    digits <= "1011";  -- digit 2
---	    segs    <= LED_TABLE(to_integer(genctr(11 downto 8)));
---	  when "1011" => 
---	    digits <= "0111";  -- digit 3 
---	    segs    <= LED_TABLE(to_integer(genctr(15 downto 9)));
---	  when "0111" => 
---	    digits <= "1110";  -- digit 0 
---	    segs    <= LED_TABLE(to_integer(genctr(3 downto 0)));
---	  when others =>
---	    digits <= "1110"; 
---	    segs    <= OFF;
---	end case;
-
       end if;
     end if;
   end process;
