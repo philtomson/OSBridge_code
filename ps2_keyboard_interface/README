@@ -1,0 +1,7 @@
+PS/2 keyboard interface for Spartan3 Starter kit board.
+
+There is code here showing how
+to get data from the keyboard... but it's not currently working.
+All 4 of the seven segment LEDs show the same character when it's 
+pressed.  It should shift each character to the left as a new one 
+is typed. 
