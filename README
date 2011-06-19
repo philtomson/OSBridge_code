@@ -2,3 +2,7 @@ VHDL demo files for my OSBridge 2011 FPGA talk.
 
 These demos are made to work with the Xilinx Spartan3 starter kit board
 from Digilec.
+
+demo code: 
+
+ca_1d: a 1 dimensional cellular automata.
