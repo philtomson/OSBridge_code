@@ -1,0 +1,40 @@
+One Dimensional cellular automata implemented in VHDL.  Runs on 
+the Xilinx Spartan3 Starter kit board.
+
+Slider switches used to set the rule:  There are 8 possibilities for next 
+state when any bit is compared with it's neighbors.  So for example,
+Rule 1 (right-most slider switch set to 'on'):
+
+000 -> 1 (lsb)
+001 -> 0
+010 -> 0
+011 -> 0
+100 -> 0
+101 -> 0
+110 -> 0
+111 -> 0 (msb)
+
+Rule 9 would be: 
+
+000 -> 1 (lsb)
+001 -> 0
+010 -> 0
+011 -> 1
+100 -> 0
+101 -> 0
+110 -> 0
+111 -> 0 (msb)
+
+
+Generation count displayed on the 4 seven segment LEDs.
+
+BTN0 is the reset. After pressing reset, the initial state is the value
+of the rule switches.
+
+TODO: come up with a way to select a different start value optionally.
+Perhaps this could be done via one of the other pushbuttons.
+Perhaps the desired rule could be set on the slider switches, then 
+reset pushed, and then the slider switches could be set to a different
+start value after a different pushbutton is pushed?  that could get
+trickey.
+
